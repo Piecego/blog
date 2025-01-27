@@ -1,0 +1,78 @@
+<!DOCTYPE html><html class="theme-light" lang="zh-CN"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#ffffff"><link href="/favicon.png" rel="shortcut icon"><title>基于 Docker Alpine 镜像运行 Rust</title><meta name="title" content="基于 Docker Alpine 镜像运行 Rust"><meta name="description" content=""><link rel="preconnect" href="https://giscus.app"><link rel="preconnect" href="https://github.com"><meta property="og:title" content="基于 Docker Alpine 镜像运行 Rust"><meta property="og:type" content="article"><meta property="article:author" content="攬餘月"><meta property="article:published_time" content="2023-04-24T00:59:39.087Z"><script type="module" src="/assets/instant.js" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script><script>
+  (function () {
+    if (typeof window !== 'undefined') {
+      const isSystemColorSchemeDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      const storageTheme = sessionStorage.getItem('theme');
+      if (!storageTheme && isSystemColorSchemeDark) {
+        document.documentElement.classList.remove('theme-light');
+        document.documentElement.classList.add('theme-dark');
+        document.head.children.namedItem('theme-color').content = '#0f172a';
+      } else if (storageTheme === 'dark') {
+        document.documentElement.classList.remove('theme-light');
+        document.documentElement.classList.add('theme-dark');
+        document.head.children.namedItem('theme-color').content = '#0f172a';
+      } else {
+        document.head.children.namedItem('theme-color').content = '#ffffff';
+      }
+    }
+  })();
+</script><link rel="stylesheet" href="/assets/about.BqWnpodl.css">
+<link rel="stylesheet" href="/assets/about.lj_PJ_6k.css"><script type="module" src="/assets/hoisted.C7XQGTOS.js"></script></head> <body> <header class="header"> <div class="header-inner"> <h1 class="flex items-center gap-2 font-bold"> <a href="/" class="text-nowrap text-base text-[var(--text-normal)] no-underline">繪畫世界</a> </h1> <nav class="nav mr-4"> <ul class="menu"> <li> <a href="/categories" class="text-sm capitalize decoration-gray-400 opacity-85"> Categories </a> </li><li> <a href="/tags" class="text-sm capitalize decoration-gray-400 opacity-85"> Tags </a> </li><li> <a href="/projects" class="text-sm capitalize decoration-gray-400 opacity-85"> Projects </a> </li><li> <a href="/about" class="text-sm capitalize decoration-gray-400 opacity-85"> About </a> </li> </ul> </nav>  <a class="w-4 h-4 opacity-80 hover:opacity-100 cursor-pointer mr-4" href="/search"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><circle cx="11" cy="11" r="8"/>
+<path d="m21 21-4.3-4.3"/></svg> </a> <theme-control class="w-4 h-4 opacity-80 hover:opacity-100 cursor-pointer mr-4"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><circle cx="12" cy="12" r="4"/>
+<path d="M12 2v2"/>
+<path d="M12 20v2"/>
+<path d="m4.93 4.93 1.41 1.41"/>
+<path d="m17.66 17.66 1.41 1.41"/>
+<path d="M2 12h2"/>
+<path d="M20 12h2"/>
+<path d="m6.34 17.66-1.41 1.41"/>
+<path d="m19.07 4.93-1.41 1.41"/></svg> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg> </theme-control>   </div> </header>    <main class="container">  <time class="opacity-85 text-sm font-bold" datetime="2023-04-24T00:59:39.087Z">Apr 24, 2023</time> <h1 class="md-title mb-4 text-3xl"> 基于 Docker Alpine 镜像运行 Rust </h1> <article class="md-content w-full mt-10 animate-in fade-in"> <p>本文采用两阶段构建 Rust 镜像包，有利于减少包体积，构建和运行环境均采用 alpine</p><div class="code-block"> <pre class="shiki highlighting language-dockerfile" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0" language="dockerfile"><code class="language-dockerfile"><span class="line"><span style="color:var(--shiki-token-comment)"># 第一阶段：构建 Rust 应用程序  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">FROM</span><span style="color:var(--shiki-foreground)"> rust:alpine </span><span style="color:var(--shiki-token-keyword)">AS</span><span style="color:var(--shiki-foreground)"> builder  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 设置工作目录  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">WORKDIR</span><span style="color:var(--shiki-foreground)"> /app  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 安装一些依赖  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">RUN</span><span style="color:var(--shiki-foreground)"> apk update &#x26;&#x26; apk add --no-cache -U musl-dev</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 复制 src 目录  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">COPY</span><span style="color:var(--shiki-foreground)"> src/ ./src/  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 复制 Cargo.toml 和 Cargo.lock</span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">COPY</span><span style="color:var(--shiki-foreground)"> Cargo.toml Cargo.lock ./  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 构建 Rust 应用程序  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">RUN</span><span style="color:var(--shiki-foreground)"> cargo build --release  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 第二阶段：创建最终镜像  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">FROM</span><span style="color:var(--shiki-foreground)"> alpine:latest  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 设置工作目录  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">WORKDIR</span><span style="color:var(--shiki-foreground)"> /var/www/app  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 从第一阶段复制构建生成的可执行文件到最终镜像  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">COPY</span><span style="color:var(--shiki-foreground)"> --from=builder /app/target/release/my_rust_app .  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">RUN</span><span style="color:var(--shiki-foreground)"> apk update &#x26;&#x26; apk add --no-cache -U libgcc  </span></span>
+<span class="line"></span>
+<span class="line"><span style="color:var(--shiki-token-comment)"># 运行Rust应用程序  </span></span>
+<span class="line"><span style="color:var(--shiki-token-keyword)">CMD</span><span style="color:var(--shiki-foreground)"> [</span><span style="color:var(--shiki-token-string-expression)">"./my_rust_app"</span><span style="color:var(--shiki-foreground)">]</span></span></code></pre> <button class="copy-code-button">copy</button> </div> <h3 id="遇到的错误" class="group flex relative" data-heading="遇到的错误"> <a aria-label="link to this heading" aria-describedby="遇到的错误" href="#遇到的错误">#</a>遇到的错误 </h3><ul class="has-list-bullet"><li> Failed to run custom build command for <code translate="no">ring v0.16.20</code>  </li></ul><p>第一阶段构建时添加</p><div class="code-block"> <pre class="shiki highlighting language-dockerfile" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0" language="dockerfile"><code class="language-dockerfile"><span class="line"><span style="color:var(--shiki-token-keyword)">RUN</span><span style="color:var(--shiki-foreground)"> apk update &#x26;&#x26; apk add --no-cache -U musl-dev</span></span></code></pre> <button class="copy-code-button">copy</button> </div> <ul class="has-list-bullet"><li> Error loading shared library libgcc_s.so.1: No such file or directory  </li></ul><p>第二阶段添加 <code translate="no">libgcc</code></p><div class="code-block"> <pre class="shiki highlighting language-dockerfile" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0" language="dockerfile"><code class="language-dockerfile"><span class="line"><span style="color:var(--shiki-token-keyword)">RUN</span><span style="color:var(--shiki-foreground)"> apk update &#x26;&#x26; apk add --no-cache -U libgcc</span></span></code></pre> <button class="copy-code-button">copy</button> </div> <ul class="has-list-bullet"><li> Segmentation fault 错误  </li></ul><p>基于 Docker alpine 镜像构建 Rust 环境在发送网络请求时会抛出：</p><div class="code-block"> <pre class="shiki highlighting language-text" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0" language="text"><code class="language-text"><span class="line"><span>Segmentation fault</span></span></code></pre> <button class="copy-code-button">copy</button> </div> <p>切换到 Debian 没有这个错误，通过 bing 搜索得知是 Alpine 的 OpenSSL 依赖问题导致，该问题同 <a href="https://stackoverflow.com/questions/75033989/how-to-resolve-a-segmentation-fault-in-a-multithreaded-rust-application-in-alpin" rel="noonpener" class="external-link" target="_blank">how-to-resolve-a-segmentation-fault-in-a-multithreaded-rust-application-in-alpin</a> 一致</p><p>解决：</p><p>reqwest 使用 rusts-tls 替代 OpenSSL</p><div class="code-block"> <pre class="shiki highlighting language-toml" style="background-color:var(--shiki-background);color:var(--shiki-foreground)" tabindex="0" language="toml"><code class="language-toml"><span class="line"><span style="color:var(--shiki-foreground)">reqwest </span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-foreground)"> { version </span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-string-expression)"> "0.11"</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-foreground)"> default-features </span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-token-constant)"> false</span><span style="color:var(--shiki-token-punctuation)">,</span><span style="color:var(--shiki-foreground)"> features </span><span style="color:var(--shiki-token-keyword)">=</span><span style="color:var(--shiki-foreground)"> [</span><span style="color:var(--shiki-token-string-expression)">"rustls-tls"</span><span style="color:var(--shiki-foreground)">] }</span></span></code></pre> <button class="copy-code-button">copy</button> </div>  </article> <div class="opacity-85 font-main mt-8"> <p class="flex gap-1 items-center mt-8"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/>
+<circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg> <span class="flex gap-2 leading-none"> <a class="text-sm hover:underline" href="/tags/docker">
+#docker </a><a class="text-sm hover:underline" href="/tags/Rust">
+#Rust </a> </span> </p> <p class="flex gap-1 items-center my-2 text-sm"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> <a class="no-underline hover:underline leading-tight" href="/categories/记录">记录</a> </p> <p class="flex gap-1 items-center my-3 text-sm"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+<path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+<path d="M10 9H8"/>
+<path d="M16 13H8"/>
+<path d="M16 17H8"/></svg> <span class="leading-tight pt-0.5">552 Words</span> </p> <p class="italic text-sm">
+/* 最后更新于
+<time datetime="2024-05-08T01:28:13.861Z"> May 8, 2024 </time>
+*/
+</p> </div> <div class="flex justify-between items-center mt-8 text-sm gap-2"> <p class="flex flex-col flex-1 min-w-0"> <span class="opacity-60">上一篇：</span> <a class="no-underline hover:underline truncate" href="/posts/2023-05-22-时序攻击"> 时序攻击 </a> </p> <p class="flex flex-col flex-1 min-w-0 text-right"> <span class="opacity-60">下一篇：</span> <a class="no-underline hover:underline truncate" href="/posts/2023-03-15-理解 FourCC 格式"> 理解 FourCC 格式 </a> </p> </div> <div class="mt-16 text-center text-gray-700 dark:text-gray-300" id="comment"> <button class="cursor-pointer opacity-60 hover:opacity-100 p-2 text-sm" type="button"> <span>載入評論</span> </button> </div>  </main>  <footer class="text-sm text-center opacity-60 mb-16 mt-12"> <p class="m-0">遵循吾之宿命，踏上未知旅程</p> <p class="mt-2"> <span>&copy; 2025 攬餘月</span>
+·
+<a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>
+·
+<a href="/rss.xml" target="_blank" title="rss"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 inline-block align-text-top"> <path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path> <circle cx="5" cy="19" r="1"></circle> </svg> </a>
+·
+<a href="https://github.com/tonitrnel" target="_blank" title="github"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 inline-block align-text-top"> <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path> <path d="M9 18c-4.51 2-5-2-7-2"></path> </svg> </a> </p> </footer> <!-- build date: 2025-01-27T10:20:50.745Z ᓚᘏᗢ--> </body></html>
